@@ -11,17 +11,8 @@ module.exports = function(grunt){
             }
         },
 
-        concat: {
-          options: {
-            separator: '\n',
-            stripBanners: true,
-            banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-              '<%= grunt.template.today("yyyy-mm-dd") %> */\n',
-          },
-          dist: {
-            src: ['src/js/d5-base.js', 'src/js/d5-hist.js'], // concats in order
-            dest: 'dist/d5.js',
-          },
+        browserify: {
+            'dist/d5.js': ['src/js/d5.js']
         },
 
         uglify: {
@@ -33,5 +24,5 @@ module.exports = function(grunt){
         },
     });
 
-    grunt.registerTask('default', ['concat', 'uglify']);
+    grunt.registerTask('default', ['browserify', 'uglify']);
 };
