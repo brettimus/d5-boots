@@ -1,4 +1,6 @@
-var stampit = require("stampit");
+var d3 = require("d3"),
+    $ = require ("jquery"),
+    stampit = require("stampit");
 
 var d5 = (function(){
     return {
