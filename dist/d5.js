@@ -19416,14 +19416,20 @@ module.exports = mixIn(stampit, {
 });
 
 },{"./mixinchain.js":3,"mout/array/forEach":4,"mout/array/map":5,"mout/object/forOwn":17,"mout/object/merge":19,"mout/object/mixIn":20}],22:[function(require,module,exports){
-var d3 = require("d3"),
-    $ = require ("jquery"),
+(function (global){
+var d3      = require("d3"),
+    $       = require ("jquery"),
     stampit = require("stampit");
 
-var d5 = (function(){
+global.d5 = (function(){
     return {
-        me: function() { console.log("Hey hey hey"); },
+        me: function() { console.log("Hey hey hey"); console.log(this); },
         stampit: stampit,
+        d3: d3,
+        $: $,
     };
 })();
+
+module.exports = d5;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"d3":1,"jquery":2,"stampit":21}]},{},[22]);
