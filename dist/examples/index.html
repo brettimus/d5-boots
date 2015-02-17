@@ -4,7 +4,90 @@
     <title>testing d5</title>
 </head>
 <body>
-Hi.
-<script src="../d5.min.js"></script>
+  <style>
+
+  body {
+    font: 10px sans-serif;
+  }
+
+  #chart {
+    padding: 20px;
+    text-align: center;
+  }
+
+  #chart .title {
+    font-size: 48px;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+  .line {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  </style>
+  
+  <div id="chart">
+    <p class="title">YOLOs Per Month</p>
+  </div>
+
+  <script src="../d5.js"></script>
+  <script>
+    var formatDate = d3.time.format("%Y-%m-%d");
+    var yoloData   = d5.utils.timeSeriesData(61);
+
+    printData(yoloData);
+
+    var charter    = d5.timeSeries();
+    var charty     = d5("#chart", yoloData); // returns a d3 selection
+
+
+    // *** (V0) Let's throw an error! *** //
+    try { 
+      charty.call(charter);
+    } 
+    catch(e) {
+      console.log(e);
+    }
+    
+    // *** (V1) Let's not throw an error! *** //
+    charter.x(function(d) {
+      return formatDate.parse(d[0]);
+    });
+    charter.y(function(d) {
+      return +d[1];
+    });
+    charty.call(charter);
+
+    // *** (V2) Gimme some d5 sugah *** //
+
+    charty.update(charter);
+
+    // *** (V2.5) Gimme some d5 sugah *** //
+    charty.datum(moreData);
+    charty.update();
+
+    // to test updating the charty
+    // var moreData = d5.utils.timeSeriesData(61);
+    // charty.datum(moreData).update()
+
+
+    function printData(data) {
+      var message = "This is our data.\n"+
+                    "=================\n";
+      console.log(message, data);
+    }
+
+  </script>
 </body>
 </html>

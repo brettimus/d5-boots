@@ -9466,16 +9466,396 @@
   this.d3 = d3;
 }();
 },{}],2:[function(require,module,exports){
+/*!
+ * @name JavaScript/NodeJS Merge v1.2.0
+ * @author yeikos
+ * @repository https://github.com/yeikos/js.merge
+
+ * Copyright 2014 yeikos - MIT license
+ * https://raw.github.com/yeikos/js.merge/master/LICENSE
+ */
+
+;(function(isNode) {
+
+	/**
+	 * Merge one or more objects 
+	 * @param bool? clone
+	 * @param mixed,... arguments
+	 * @return object
+	 */
+
+	var Public = function(clone) {
+
+		return merge(clone === true, false, arguments);
+
+	}, publicName = 'merge';
+
+	/**
+	 * Merge two or more objects recursively 
+	 * @param bool? clone
+	 * @param mixed,... arguments
+	 * @return object
+	 */
+
+	Public.recursive = function(clone) {
+
+		return merge(clone === true, true, arguments);
+
+	};
+
+	/**
+	 * Clone the input removing any reference
+	 * @param mixed input
+	 * @return mixed
+	 */
+
+	Public.clone = function(input) {
+
+		var output = input,
+			type = typeOf(input),
+			index, size;
+
+		if (type === 'array') {
+
+			output = [];
+			size = input.length;
+
+			for (index=0;index<size;++index)
+
+				output[index] = Public.clone(input[index]);
+
+		} else if (type === 'object') {
+
+			output = {};
+
+			for (index in input)
+
+				output[index] = Public.clone(input[index]);
+
+		}
+
+		return output;
+
+	};
+
+	/**
+	 * Merge two objects recursively
+	 * @param mixed input
+	 * @param mixed extend
+	 * @return mixed
+	 */
+
+	function merge_recursive(base, extend) {
+
+		if (typeOf(base) !== 'object')
+
+			return extend;
+
+		for (var key in extend) {
+
+			if (typeOf(base[key]) === 'object' && typeOf(extend[key]) === 'object') {
+
+				base[key] = merge_recursive(base[key], extend[key]);
+
+			} else {
+
+				base[key] = extend[key];
+
+			}
+
+		}
+
+		return base;
+
+	}
+
+	/**
+	 * Merge two or more objects
+	 * @param bool clone
+	 * @param bool recursive
+	 * @param array argv
+	 * @return object
+	 */
+
+	function merge(clone, recursive, argv) {
+
+		var result = argv[0],
+			size = argv.length;
+
+		if (clone || typeOf(result) !== 'object')
+
+			result = {};
+
+		for (var index=0;index<size;++index) {
+
+			var item = argv[index],
+
+				type = typeOf(item);
+
+			if (type !== 'object') continue;
+
+			for (var key in item) {
+
+				var sitem = clone ? Public.clone(item[key]) : item[key];
+
+				if (recursive) {
+
+					result[key] = merge_recursive(result[key], sitem);
+
+				} else {
+
+					result[key] = sitem;
+
+				}
+
+			}
+
+		}
+
+		return result;
+
+	}
+
+	/**
+	 * Get type of variable
+	 * @param mixed input
+	 * @return string
+	 *
+	 * @see http://jsperf.com/typeofvar
+	 */
+
+	function typeOf(input) {
+
+		return ({}).toString.call(input).slice(8, -1).toLowerCase();
+
+	}
+
+	if (isNode) {
+
+		module.exports = Public;
+
+	} else {
+
+		window[publicName] = Public;
+
+	}
+
+})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+},{}],3:[function(require,module,exports){
 (function (global){
-var d3      = require("d3");
+var d3   = require("d3");
+var timeSeries = require("./time_series");
+var utils = require("./utils");
 
 global.d5 = (function(){
-    return {
-        me: function() { console.log("Hey hey hey"); console.log(this); },
-        d3: d3,
-    };
+    function d5(selector, data, charter) {
+        var charty = d3.select(selector);
+
+        if (data)    charty.datum(data);
+        if (charter) charty.call(charter);
+
+        charty.update = function update(newCharter) {
+            if (newCharter) charter = newCharter;
+            this.call(charter);
+            return this;
+        };
+
+        return charty;
+    }
+
+    d5.timeSeries = timeSeries;
+    d5.utils      = utils;
+    d5.d3         = d3;
+
+    return d5;
+
 })();
 
 module.exports = d5;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"d3":1}]},{},[2]);
+},{"./time_series":4,"./utils":5,"d3":1}],4:[function(require,module,exports){
+var d3    = require("d3"),
+    merge = require("merge");
+
+// sensible errors
+function xValueError() {
+    var message = "I don't know how to access the data's x-values. "+
+                    "Configure my getter with <sample code>.";
+    throw new Error(message);
+}
+
+function yValueError() {
+    var message = "I don't know how to access the data's y-values. "+
+                    "Configure my getter with <sample code>.";
+    throw new Error(message);
+}
+
+// sensible defaults for a line chart, right?
+var DEFAULTS = {
+    margin: {
+        top    : 10,
+        right  : 10,
+        bottom : 25,
+        left   : 25,
+    },
+    dimensions: {
+        height : 500,
+        width  : 960,
+    },
+    line: {
+        interpolate: "linear",
+    },
+    xValue: xValueError,
+    yValue: yValueError,
+};
+
+// heavily inspired by m. bostock's example of a reusable time-series chart
+function timeSeriesLine(options) {
+    // merge the defaults with our options
+    options = merge.recursive(true, DEFAULTS, options || {});
+
+    var height      = options.dimensions.height,
+        width       = options.dimensions.width,
+        margin      = options.margin,
+        xScale      = d3.time.scale(),
+        yScale      = d3.scale.linear(),
+        xAxis       = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
+        area        = d3.svg.area().x(X).y1(Y),
+        line        = d3.svg.line().x(X).y(Y),
+        interpolate = options.line.interpolate;
+
+    var chart = function chart(selection) {
+        selection.each(function(data) {
+            // Generate the chart
+            // * `this` is the DOM element
+            // * `data` is the data
+
+            // Update the x-scale.
+            xScale
+                .domain(d3.extent(data, options.xValue))
+                .range([0, width - margin.left - margin.right]);
+
+            // Update the y-scale.
+            yScale
+                .domain([0, d3.max(data, options.yValue)])
+                .range([height - margin.top - margin.bottom, 0]);
+
+            // Grab that svg element
+            var svg = d3.select(this).selectAll("svg").data([data]);
+
+            // If there isn't an svg element, we need to make one
+            // *** NB - this is the beauty of the d3 update pattern...
+            var gEnter = svg.enter().append("svg").append("g");
+            gEnter.append("path").attr("class", "area");
+            gEnter.append("path").attr("class", "line");
+            gEnter.append("g").attr("class", "x axis");
+
+            // Update the outer dimensions.
+            svg.attr("width", width)
+                .attr("height", height);
+
+            // Update the inner dimensions.
+            var g = svg.select("g")
+                .attr("transform", "translate(" + [margin.left, margin.top] + ")");
+
+            // Update the area path.
+            g.select(".area")
+                // .attr("d", area.y0(yScale.range()[1]))
+                // .transition()
+                .attr("d", area.y0(yScale.range()[0]))
+                // .duration(1000);
+
+            // Update the line path.
+            g.select(".line")
+                .transition()
+                .attr("d", line);
+
+            // Update the x-axis.
+            g.select(".x.axis")
+                .attr("transform", "translate(0," + yScale.range()[0] + ")")
+                .call(xAxis);
+
+        });
+    };
+
+    // accessor functions for attributes we want to be able to update
+    chart.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        return chart;
+    };
+
+    chart.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        return chart;
+    };
+
+    chart.margin = function(value) {
+        if (!arguments.length) return margin;
+        margin = value;
+        return chart;
+    };
+
+    chart.interpolate = function(value) {
+        if (!arguments.length) return interpolate;
+        interpolate = value;
+        return chart;
+    };
+
+    chart.x = function(getter) {
+        if (!arguments.length) return x;
+        options.xValue = getter;
+        return chart;
+    };
+
+    chart.y = function(getter) {
+        if (!arguments.length) return y;
+        options.yValue = getter;
+        return chart;
+    };
+
+    // accessors for the SVG path generator
+    function X(d) {
+        return xScale(options.xValue(d));
+    }
+
+    function Y(d) {
+        return yScale(options.yValue(d));
+    }
+
+    return chart;
+}
+
+module.exports = timeSeriesLine;
+},{"d3":1,"merge":2}],5:[function(require,module,exports){
+var d3 = require("d3");
+
+var format = d3.time.format("%Y-%m-%d"); // yyyy-mm-dd
+
+// generate n random 
+function randomTimeSeriesData(n, start) {
+    n = n || 50;
+    var i,
+        datum,
+        rNumber = 0,
+        date = start || new Date(2010, 0, 1),
+        result = [];
+
+    for (i = 0; i < n; i++) {
+        // add ranodmly generated data to the result
+        datum = [format(date), rNumber];
+        result.push(datum);
+
+        // increment month, set a new random number
+        date.setMonth(date.getMonth() + 1);
+        rNumber = Math.floor(Math.random()*100);
+    }
+
+    return result;
+}
+
+module.exports = {
+    timeSeriesData: randomTimeSeriesData
+};
+},{"d3":1}]},{},[3]);
