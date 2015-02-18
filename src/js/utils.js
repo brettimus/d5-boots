@@ -24,6 +24,20 @@ function randomTimeSeriesData(n, start) {
     return result;
 }
 
+function xValueError() {
+    var message = "I don't know how to access the data's x-values. "+
+                    "Configure my getter with <sample code>.";
+    throw new Error(message);
+}
+
+function yValueError() {
+    var message = "I don't know how to access the data's y-values. "+
+                    "Configure my getter with <sample code>.";
+    throw new Error(message);
+}
+
 module.exports = {
-    timeSeriesData: randomTimeSeriesData
+    timeSeriesData: randomTimeSeriesData,
+    xValueError: xValueError,
+    yValueError: yValueError,
 };

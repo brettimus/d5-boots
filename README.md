@@ -42,11 +42,12 @@ Heavily inspired by M. Bostock's [Towards Reusable Charts](http://bost.ocks.org/
   // Now we're ready to go!
 
   // try this
-  var charty = d5(selector, data, charter);
+  var charty = d5(selector).datum(data).update(charter);
   // or this
   var charty = d5(selector, data).update(charter);
   // or even this
-  var charty = d5(selector).datum(data).update(charter);
+  var charty = d5(selector, data, charter);
+
 ```
 
 ## what's included

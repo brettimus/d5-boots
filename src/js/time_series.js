@@ -1,18 +1,8 @@
 var d3    = require("d3"),
-    merge = require("merge");
+    merge = require("merge"),
+    utils = require("./utils");
 
-// sensible errors
-function xValueError() {
-    var message = "I don't know how to access the data's x-values. "+
-                    "Configure my getter with <sample code>.";
-    throw new Error(message);
-}
 
-function yValueError() {
-    var message = "I don't know how to access the data's y-values. "+
-                    "Configure my getter with <sample code>.";
-    throw new Error(message);
-}
 
 // sensible defaults for a line chart, right?
 var DEFAULTS = {
@@ -29,8 +19,8 @@ var DEFAULTS = {
     line: {
         interpolate: "linear",
     },
-    xValue: xValueError,
-    yValue: yValueError,
+    xValue: utils.xValueError,
+    yValue: utils.yValueError,
 };
 
 // heavily inspired by m. bostock's example of a reusable time-series chart

@@ -3,6 +3,7 @@ var timeSeries = require("./time_series");
 var utils = require("./utils");
 
 global.d5 = (function(){
+    
     function d5(selector, data, charter) {
         var charty = d3.select(selector);
 
