@@ -1,5 +1,7 @@
-module.exports = function(grunt){
+module.exports = function(grunt) {
     "use strict";
+
+    // load all grunt npm modules
     require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);
 
     grunt.initConfig({
@@ -11,10 +13,12 @@ module.exports = function(grunt){
             }
         },
 
+        // lets us use npm-style modules in the browser
         browserify: {
             'dist/d5.js': ['src/js/d5.js']
         },
 
+        // for minification and compression
         uglify: {
             build: {
                 files: {
