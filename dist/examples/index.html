@@ -5,18 +5,17 @@
 </head>
 <body>
   <style>
-
   body {
     font: 10px sans-serif;
   }
-
   #chart {
-    padding: 20px;
-    text-align: center;
+    padding: 50px; text-align: center;
   }
-
   #chart .title {
-    font-size: 48px;
+    font-size: 48px; margin: 0;
+  }
+  #chart .subtitle {
+    color: gray; font-size: 24px; 
   }
 
   .axis path,
@@ -39,12 +38,14 @@
   
   <div id="chart">
     <p class="title">YOLOs Per Month</p>
+    <p class="subtitle">(2010-2014)</p>
   </div>
 
   <script src="../d5.js"></script>
   <script>
     var formatDate = d3.time.format("%Y-%m-%d");
     var yoloData   = d5.utils.timeSeriesData(61);
+    var moreData   = d5.utils.timeSeriesData(61);
 
     printData(yoloData);
 
@@ -53,12 +54,7 @@
 
 
     // *** (V0) Let's throw an error! *** //
-    try { 
-      charty.call(charter);
-    } 
-    catch(e) {
-      console.log(e);
-    }
+    // charty.call(charter);
     
     // *** (V1) Let's not throw an error! *** //
     charter.x(function(d) {
@@ -71,15 +67,13 @@
 
     // *** (V2) Gimme some d5 sugah *** //
 
-    charty.update(charter);
+    charty.update(charter); // keeps track of the most recently used charter for subsequent updates
 
-    // *** (V2.5) Gimme some d5 sugah *** //
+    // *** (V2.5) Yum! sugah *** //
     charty.datum(moreData);
     charty.update();
 
-    // to test updating the charty
-    // var moreData = d5.utils.timeSeriesData(61);
-    // charty.datum(moreData).update()
+    // *** (v3) Let's get some new data *** //
 
 
     function printData(data) {

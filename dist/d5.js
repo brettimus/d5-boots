@@ -9720,6 +9720,7 @@ function timeSeriesLine(options) {
         xScale      = d3.time.scale(),
         yScale      = d3.scale.linear(),
         xAxis       = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
+        yAxis       = d3.svg.axis().scale(yScale).orient("left"),
         area        = d3.svg.area().x(X).y1(Y),
         line        = d3.svg.line().x(X).y(Y),
         interpolate = options.line.interpolate;
@@ -9740,6 +9741,9 @@ function timeSeriesLine(options) {
                 .domain([0, d3.max(data, options.yValue)])
                 .range([height - margin.top - margin.bottom, 0]);
 
+            // Update the line's interpolation
+            line.interpolate(interpolate);
+            area.interpolate(interpolate);
             // Grab that svg element
             var svg = d3.select(this).selectAll("svg").data([data]);
 
@@ -9749,6 +9753,7 @@ function timeSeriesLine(options) {
             gEnter.append("path").attr("class", "area");
             gEnter.append("path").attr("class", "line");
             gEnter.append("g").attr("class", "x axis");
+            gEnter.append("g").attr("class", "y axis");
 
             // Update the outer dimensions.
             svg.attr("width", width)
@@ -9774,6 +9779,10 @@ function timeSeriesLine(options) {
             g.select(".x.axis")
                 .attr("transform", "translate(0," + yScale.range()[0] + ")")
                 .call(xAxis);
+
+            g.select(".y.axis")
+                .attr("class", "y axis")
+                .call(yAxis);
 
         });
     };

@@ -24,5 +24,7 @@ module.exports = function(grunt){
         },
     });
 
+    // default task
+    // * this is what runs when we just type `grunt`
     grunt.registerTask('default', ['browserify', 'uglify']);
 };

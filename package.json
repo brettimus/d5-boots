@@ -1,7 +1,7 @@
 {
   "name": "d5-boots",
-  "version": "0.0.1",
-  "description": "some boilerplate d3 code- made for pdx d3 meetup",
+  "version": "0.0.2",
+  "description": "some boilerplate d3 code- made for February pdx d3 meetup",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,13 +10,13 @@
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.5",
+    "grunt-browserify": "~3.3.0",
     "grunt-contrib-uglify": "~0.7.0",
     "matchdep": "~0.3.0",
-    "d3": "~3.5.3",
-    "qunit": "~0.7.5",
-    "grunt-browserify": "~3.3.0"
+    "qunit": "~0.7.5"
   },
   "dependencies": {
+    "d3": "~3.5.3",
     "merge": "~1.2.0"
   }
 }
