@@ -42,6 +42,8 @@ Heavily inspired by M. Bostock's [Towards Reusable Charts](http://bost.ocks.org/
   // Now we're ready to go!
 
   // try this
+  var charty = d3(selector).datum(data).call(charter);
+  // or this
   var charty = d5(selector).datum(data).update(charter);
   // or this
   var charty = d5(selector, data).update(charter);
