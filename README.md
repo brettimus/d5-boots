@@ -1,5 +1,14 @@
 # d5 (ddddd)
 **don't duplicate data driven documents**
+A forthcoming d3 charting library from Shrimpbird Labs
+
+## TODO
+* [Required Reading](http://bost.ocks.org/mike/chart/)
+* Outline Scope
+* Create Examples
+
+
+# THIS IS THE OLD README AS A REMINDER...
 
 ## about
 

@@ -1,5 +1,5 @@
 var d3   = require("d3");
-var timeSeries = require("./time_series");
+var timeSeries = require("./charts/time_series");
 var utils = require("./utils");
 
 global.d5 = (function(){
