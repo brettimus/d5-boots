@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             js: {
-                files: ['dist/d5.js'],
-                tasks: ['uglify']
+                files: ['src/js/**/*.js'],
+                tasks: ['default'],
             }
         },
 
@@ -31,4 +31,5 @@ module.exports = function(grunt) {
     // default task
     // * this is what runs when we just type `grunt`
     grunt.registerTask('default', ['browserify', 'uglify']);
+    grunt.registerTask('watch', ['watch']);
 };

@@ -2,6 +2,24 @@
 **don't duplicate data driven documents**
 A forthcoming d3 charting library from Shrimpbird Labs
 
+## To Get Going
+* All source javascript lives in `src/js`. 
+* All charting functions live in `src/js/charts`
+
+You need your dependencies. Run `npm install` in the project root.
+
+You need `grunt` to build the `src` files. 
+Install [grunt-cli](https://www.npmjs.com/package/grunt-cli) with 
+`npm install grunt-cli`.
+
+To build the source files, simply type `grunt`.
+
+If you are making a lot of small changes continuously, try using the `grunt watch` command.
+
+Let this command run in your terminal, and whenever you change a file, your files will automagically rebuild :tada:.
+
+
+
 ## TODO
 * [Required Reading](http://bost.ocks.org/mike/chart/)
 * Outline Scope
