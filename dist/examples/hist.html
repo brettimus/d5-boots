@@ -1,0 +1,86 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>testing d5</title>
+</head>
+<body>
+  <style>
+  body {
+    font: 10px sans-serif;
+  }
+  #chart {
+    padding: 50px; text-align: center;
+  }
+  #chart .title {
+    font-size: 48px; margin: 0;
+  }
+  #chart .subtitle {
+    color: gray; font-size: 24px; 
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+  .line {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  </style>
+  
+  <div id="chart">
+    <p class="title">YOLOs Per Month</p>
+    <p class="subtitle">(2010-2014)</p>
+  </div>
+
+  <script src="../d5.js"></script>
+  <script>
+    var formatDate = d3.time.format("%Y-%m-%d");
+    var yoloData   = d5.utils.timeSeriesData(12);
+    var moreData   = d5.utils.timeSeriesData(12);
+
+    printData(yoloData);
+
+    var charter    = d5.hist();
+    var charty     = d5("#chart", yoloData); // returns a d3 selection
+
+
+    // *** (V0) Let's throw an error! *** //
+    // charty.call(charter);
+    
+    // *** (V1) Let's not throw an error! *** //
+    charter.x(function(d) {
+      return formatDate.parse(d[0]);
+    });
+    charter.y(function(d) {
+      return +d[1];
+    });
+    charty.call(charter);
+    // *** (V2) Gimme some d5 sugah *** //
+
+    charty.update(charter); // keeps track of the most recently used charter for subsequent updates
+
+    // *** (V2.5) Yum! sugah *** //
+    charty.datum(moreData);
+    charty.update();
+
+    // *** (v3) Let's smooth out that line! *** //
+
+
+    function printData(data) {
+      var message = "This is our data.\n"+
+                    "=================\n";
+      console.log(message, data);
+    }
+
+  </script>
+</body>
+</html>
