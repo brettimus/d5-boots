@@ -1,5 +1,6 @@
 var d3   = require("d3");
 var timeSeries = require("./charts/time_series");
+var line = require("./charts/line");
 var utils = require("./utils");
 
 global.d5 = (function(){
@@ -20,6 +21,7 @@ global.d5 = (function(){
     }
 
     d5.timeSeries = timeSeries;
+    d5.line = line;
     d5.utils      = utils;
     d5.d3         = d3;
 
