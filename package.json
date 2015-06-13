@@ -8,6 +8,10 @@
   },
   "author": "boots",
   "license": "MIT",
+  "repository" : { 
+    "type" : "git", 
+    "url" : "https://github.com/brettimus/d5-boots.git"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-browserify": "~3.3.0",
@@ -16,7 +20,10 @@
     "qunit": "~0.7.5"
   },
   "dependencies": {
+    "boo-templates": "^0.1.4",
+    "boots-utils": "^0.2.5",
     "d3": "~3.5.3",
-    "merge": "~1.2.0"
+    "merge": "~1.2.0",
+    "moment": "^2.10.3"
   }
 }
