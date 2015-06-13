@@ -25,6 +25,7 @@ Let this command run in your terminal, and whenever you change a file, your file
 * Outline Scope
 * Create Examples
 
+**How can we factor out all of that repeated `chart` code?**
 
 # THIS IS THE OLD README AS A REMINDER...
 

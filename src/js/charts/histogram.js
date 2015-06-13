@@ -127,20 +127,8 @@ function hist(options) {
         return chart;
     };
 
-    chart.margin = function(value) {
-        if (!arguments.length) return margin;
-        margin = value;
-        return chart;
-    };
-
-    chart.interpolate = function(value) {
-        if (!arguments.length) return interpolate;
-        interpolate = value;
-        return chart;
-    };
-
-    chart.y = function(color) {
-        if (!arguments.length) return options.stroke;
+    chart.fill = function(color) {
+        if (!arguments.length) return options.fill;
         options.stroke = color;
         return chart;
     };

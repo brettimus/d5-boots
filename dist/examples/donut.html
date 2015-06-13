@@ -1,0 +1,87 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>testing d5</title>
+</head>
+<body>
+  <style>
+  body {
+    font: 10px sans-serif;
+  }
+  #chart {
+    padding: 50px; text-align: center;
+  }
+  #chart .title {
+    font-size: 48px; margin: 0;
+  }
+  #chart .subtitle {
+    color: gray; font-size: 24px; 
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+  .line {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  </style>
+  
+  <div id="chart">
+    <p class="title">%YOLO by Yolo</p>
+    <p class="subtitle">(2010-2014)</p>
+  </div>
+
+  <script src="../d5.js"></script>
+  <script>
+    var yoloData   = fakeData(Math.floor(Math.random()*60) + 20);
+
+    printData(yoloData);
+
+    var charter    = d5.donut();
+    var charty     = d5("#chart", yoloData); // returns a d3 selection
+
+
+    // *** (V0) Let's throw an error! *** //
+    // charty.call(charter);
+    
+    // *** (V1) Let's not throw an error! *** //
+    charter.x(function(d) {
+      return d.category;
+    });
+    charter.y(function(d) {
+      return d.count;
+    });
+    charty.call(charter);
+
+    function printData(data) {
+      var message = "This is our data.\n"+
+                    "=================\n";
+      console.log(message, data);
+    }
+
+    function fakeData(n) {
+        var result = [];
+        result.push({
+            category: "ask",
+            count: n,
+        });
+        result.push({
+            category: "offer",
+            count: 100-n,
+        });
+        return result;
+    }
+
+  </script>
+</body>
+</html>

@@ -13033,6 +13033,174 @@ arguments[4][3][0].apply(exports,arguments)
 }));
 },{}],13:[function(require,module,exports){
 var d3 = require("d3"),
+    parentWidth = require("../utils").parentWidth,
+    errors = require('../errors'),
+    extend = require("boots-utils").extend;
+
+module.exports = doonut;
+
+var DEFAULTS = {
+    height : 500,
+    width  : 960,
+    marginTop: 20,
+    marginRight: 20,
+    marginBottom: 50,
+    marginLeft: 20,
+    xValue: errors.xValueError,
+    yValue: errors.yValueError,
+    fill: "#222",
+};
+
+function doonut(options) {
+    options = extend(DEFAULTS, options);
+
+
+    var width = options.width - options.marginLeft - options.marginRight,
+        height = options.height - options.marginTop - options.marginBottom,
+        marginTop = options.marginTop,
+        marginRight = options.marginRight,
+        marginBottom = options.marginBottom,
+        marginLeft = options.marginLeft,
+        color       = d3.scale.ordinal().range(["#ccc", "#666"]);
+
+    var chart = function chart(selection) {
+        selection.each(function(data) {
+
+            var svg = d3.select(this).selectAll("svg").data([data]);
+
+            var gEnter = svg.enter().append("svg").append("g");
+            gEnter.append("g").attr("class", "x axis");
+            gEnter.append("g").attr("class", "y axis");
+
+            // Update the outer dimensions.
+            svg.attr("width", width)
+                .attr("height", height);
+
+            // Update the inner dimensions.
+            var g = svg.select("g")
+                .attr("transform", "translate(" + [width/2, height/2] + ")");
+
+            var radius = Math.min(width, height)/2;
+
+            var arc = d3.svg.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(radius - 60);
+
+            var pie = d3.layout.pie()
+                .sort(null)
+                .value(options.yValue);
+
+            var gArc = g.selectAll(".arc")
+                .data(pie(data))
+                .enter()
+                .append("g")
+                .attr("class", "arc");
+
+            gArc.append("path")
+                .attr("d", arc)
+                .style("fill", function(d) { return color(d.data.category); });
+
+            gArc.append("text")
+                .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                .attr("dy", ".35em")
+                .style("text-anchor", "middle")
+                .text(function(d) { return "" && d.data.category; });
+
+
+        });
+    };
+
+    // accessor functions for attributes we want to be able to update
+    chart.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        return chart;
+    };
+
+    chart.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        return chart;
+    };
+
+    chart.fill = function(color) {
+        if (!arguments.length) return options.fill;
+        options.stroke = color;
+        return chart;
+    };
+
+    chart.x = function(getter) {
+        if (!arguments.length) return x;
+        options.xValue = getter;
+        return chart;
+    };
+
+    chart.y = function(getter) {
+        if (!arguments.length) return y;
+        options.yValue = getter;
+        return chart;
+    };
+
+    return chart;
+}
+
+function donut(selection, percent) {
+    percent = percent || Math.random()*60 + 20;
+    var data = fakeData(percent);
+    var width = parentWidth(selection),
+        height = 220,
+        radius = Math.min(width, height)/2;
+
+    var color = d3.scale.ordinal()
+        .range(["#5aa5be", "#ef412d"]);
+
+    var arc = d3.svg.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(radius - 60);
+
+    var pie = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return d.count; });
+
+    var svg = selection.attr({
+            width: width,
+            height: height,
+        })
+        .append("g")
+        .attr("transform", "translate("+[width/2, height/2]+")");
+
+    var g = svg.selectAll(".arc")
+        .data(pie(data))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+    g.append("path")
+        .attr("d", arc)
+        .style("fill", function(d) { return color(d.data.category); });
+
+    g.append("text")
+        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+        .attr("dy", ".35em")
+        .style("text-anchor", "middle")
+        .text(function(d) { return "" && d.data.category; });
+}
+
+
+function fakeData(n) {
+    var result = [];
+    result.push({
+        category: "ask",
+        count: n,
+    });
+    result.push({
+        category: "offer",
+        count: 100-n,
+    });
+    return result;
+}
+},{"../errors":18,"../utils":19,"boots-utils":9,"d3":10}],14:[function(require,module,exports){
+var d3 = require("d3"),
     Boo = require("boo-templates"),
     extend = require("boots-utils").extend,
     parentWidth = require("../utils").parentWidth,
@@ -13161,20 +13329,8 @@ function hist(options) {
         return chart;
     };
 
-    chart.margin = function(value) {
-        if (!arguments.length) return margin;
-        margin = value;
-        return chart;
-    };
-
-    chart.interpolate = function(value) {
-        if (!arguments.length) return interpolate;
-        interpolate = value;
-        return chart;
-    };
-
-    chart.y = function(color) {
-        if (!arguments.length) return options.stroke;
+    chart.fill = function(color) {
+        if (!arguments.length) return options.fill;
         options.stroke = color;
         return chart;
     };
@@ -13266,7 +13422,7 @@ function histogram(selection, data, options) {
         .attr("height", 0)
         .remove();
 }
-},{"../errors":17,"../utils":18,"boo-templates":5,"boots-utils":9,"d3":10}],14:[function(require,module,exports){
+},{"../errors":18,"../utils":19,"boo-templates":5,"boots-utils":9,"d3":10}],15:[function(require,module,exports){
 var d3 = require("d3"),
     parentWidth = require("../utils").parentWidth,
     moment = require("moment"),
@@ -13420,7 +13576,7 @@ function bline(options) {
 
 
 
-},{"../errors":17,"../utils":18,"boots-utils":9,"d3":10,"moment":12}],15:[function(require,module,exports){
+},{"../errors":18,"../utils":19,"boots-utils":9,"d3":10,"moment":12}],16:[function(require,module,exports){
 var d3    = require("d3"),
     merge = require("merge"),
     utils = require("../utils"),
@@ -13572,13 +13728,16 @@ function timeSeriesLine(options) {
 }
 
 module.exports = timeSeriesLine;
-},{"../errors":17,"../utils":18,"d3":10,"merge":11}],16:[function(require,module,exports){
+},{"../errors":18,"../utils":19,"d3":10,"merge":11}],17:[function(require,module,exports){
 (function (global){
 var d3   = require("d3");
 var timeSeries = require("./charts/time_series");
 var line = require("./charts/line");
 var hist = require("./charts/histogram");
+var donut = require("./charts/donut");
+
 var utils = require("./utils");
+
 
 global.d5 = (function(){
     
@@ -13600,6 +13759,7 @@ global.d5 = (function(){
     d5.timeSeries = timeSeries;
     d5.line = line;
     d5.hist = hist;
+    d5.donut = donut;
     d5.utils      = utils;
     d5.d3         = d3;
 
@@ -13609,7 +13769,7 @@ global.d5 = (function(){
 
 module.exports = d5;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./charts/histogram":13,"./charts/line":14,"./charts/time_series":15,"./utils":18,"d3":10}],17:[function(require,module,exports){
+},{"./charts/donut":13,"./charts/histogram":14,"./charts/line":15,"./charts/time_series":16,"./utils":19,"d3":10}],18:[function(require,module,exports){
 module.exports = {
     xValueError: xValueError,
     yValueError: yValueError,
@@ -13626,7 +13786,7 @@ function yValueError() {
                     "Configure my getter with <sample code>.";
     throw new Error(message);
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var d3 = require("d3");
 
 var format = d3.time.format("%Y-%m-%d"); // yyyy-mm-dd
@@ -13679,4 +13839,4 @@ module.exports = {
 };
 
 
-},{"d3":10}]},{},[16]);
+},{"d3":10}]},{},[17]);
