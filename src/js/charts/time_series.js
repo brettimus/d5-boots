@@ -1,8 +1,7 @@
 var d3    = require("d3"),
     merge = require("merge"),
-    utils = require("./utils");
-
-
+    utils = require("../utils"),
+    errors = require("../errors");
 
 // sensible defaults for a line chart, right?
 var DEFAULTS = {
@@ -12,24 +11,22 @@ var DEFAULTS = {
         bottom : 25,
         left   : 25,
     },
-    dimensions: {
-        height : 500,
-        width  : 960,
-    },
+    height : 500,
+    width  : 960,
     line: {
         interpolate: "linear",
     },
-    xValue: utils.xValueError,
-    yValue: utils.yValueError,
+    xValue: errors.xValueError,
+    yValue: errors.yValueError,
 };
 
 // heavily inspired by m. bostock's example of a reusable time-series chart
 function timeSeriesLine(options) {
     // merge the defaults with our options
-    options = merge.recursive(true, DEFAULTS, options || {});
+    options = merge.recursive(true, {}, DEFAULTS, options || {});
 
-    var height      = options.dimensions.height,
-        width       = options.dimensions.width,
+    var height      = options.height,
+        width       = options.width,
         margin      = options.margin,
         xScale      = d3.time.scale(),
         yScale      = d3.scale.linear(),

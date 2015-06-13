@@ -24,20 +24,28 @@ function randomTimeSeriesData(n, start) {
     return result;
 }
 
-function xValueError() {
-    var message = "I don't know how to access the data's x-values. "+
-                    "Configure my getter with <sample code>.";
-    throw new Error(message);
+function parentWidth(d3Sel) {
+    return d3Sel.node().parentNode.getBoundingClientRect().width;
 }
 
-function yValueError() {
-    var message = "I don't know how to access the data's y-values. "+
-                    "Configure my getter with <sample code>.";
-    throw new Error(message);
+function round(n, k) {
+    // k is number of decimal places
+    var factor = Math.pow(10, k);
+    return Math.round(factor * n) / factor;
 }
+
+function toPercent(a, b) {
+    if (arguments.length === 1) {
+        return Math.round(a) + "%";
+    }
+    return toPercent(100*a/b);
+}
+
 
 module.exports = {
     timeSeriesData: randomTimeSeriesData,
-    xValueError: xValueError,
-    yValueError: yValueError,
+    parentWidth: parentWidth,
+    round: round,
+    toPercent: toPercent,
 };
+
