@@ -1,5 +1,5 @@
 var d3 = require('d3');
-var Chart = require('./chart-class').Chart;
+var Chart = require('./chart-class');
 /**
  * Constructor for a line chart function
  */

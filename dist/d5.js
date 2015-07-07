@@ -10032,7 +10032,7 @@ var merge = require('merge');
  * Default values are provided by config. Leaves method makeChart open to be
  * defined for specific chart types.
  */
-exports.Chart = function(config) {
+module.exports = function Chart(config) {
   var DEFAULTS = {
     title: 'FUN TIME 2K15 CHART',
     width: 600,
@@ -10237,7 +10237,7 @@ module.exports = {
 };
 },{"./bar-grouped":3,"./bar-stacked":4,"./line":7,"./points":8,"./time-series":9}],7:[function(require,module,exports){
 var d3 = require('d3');
-var Chart = require('./chart-class').Chart;
+var Chart = require('./chart-class');
 /**
  * Constructor for a line chart function
  */

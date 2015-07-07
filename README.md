@@ -62,6 +62,7 @@ Heavily inspired by M. Bostock's [Towards Reusable Charts](http://bost.ocks.org/
 
 
 ## Notes
+* Load scripts at bottom of html, before `</body>`
 * `.js` suffix is unnecessary when requiring local files.
 * If you're only exporting one thing, do `module.exports = <MyOneThing>`.
 * Don't mix tabs and spaces. (I blame `emacs`)

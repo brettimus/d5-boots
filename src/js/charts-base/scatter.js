@@ -3,7 +3,7 @@ var Chart = require('./chart-class');
 /**
  * Constructor for a scatterplot chart chart function
  */
-module.exports = function(config) {
+module.exports = function scatter(config) {
   var pointChart = new Chart(config);
 
   // Define the make chart function

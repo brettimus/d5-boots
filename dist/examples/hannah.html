@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-  <script src="./dist/index.js"></script>
   <style>
     .axis path, 
     .axis line{
@@ -48,6 +46,7 @@
   </p>
 
 
+  <script src="../d5.js"></script>
   <script type="text/javascript">
     var options= {
   margin: {
@@ -73,15 +72,15 @@
   var dataset = [{x:3, y:5}, {x:2, y:6}, {x:1, y:10}, {x:0, y:6}, {x:4, y:5}, {x:5, y:8}, {x:6, y:2}]
 
 
-  var stackedChart = _datD3.stackedHistogram().width(400).height(300)
-      _datD3("#chart1", data, stackedChart)
+  var stackedChart = d5.barStacked().width(400).height(300)
+      d5("#chart1", data, stackedChart)
       
 
-  var groupedChart = _datD3.groupedHistogram().width(400).height(300)
-      _datD3("#chart2", data, groupedChart)
+  var groupedChart = d5.barGrouped().width(400).height(300)
+      d5("#chart2", data, groupedChart)
 
-  var barGraph = _datD3.barGraph()
-      _datD3("#chart3", dataset, barGraph)
+  // var barGraph = d5.barGraph()
+  //     d5("#chart3", dataset, barGraph)
 
   </script>
 </body>
