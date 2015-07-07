@@ -54,5 +54,23 @@ Heavily inspired by M. Bostock's [Towards Reusable Charts](http://bost.ocks.org/
 
 ## what's included
 
-**TODO**
-:grin:
+* area
+* bar (grouped)
+* bar (stacked)
+* line
+* scatter
+
+
+## Notes
+* `.js` suffix is unnecessary when requiring local files.
+* If you're only exporting one thing, do `module.exports = <MyOneThing>`.
+* Don't mix tabs and spaces. (I blame `emacs`)
+* Use d3 where you can (`ajax`, `other-stuff`)
+* Be sylistically consistent. Indentation, bracketing, semicolons, spaces after colons, etc.
+
+
+
+## TODO
+* Determine levels of configurability
+* Refactor refactor refactor
+* Dynamically requiring all charts in the `base-charts` folder for its `index.js` `exports` object. See me about troubles I've had doing this with Browserify.

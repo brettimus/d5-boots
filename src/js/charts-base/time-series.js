@@ -1,6 +1,6 @@
 var d3    = require("d3"),
     merge = require("merge"),
-    utils = require("./utils");
+    utils = require("../utils");
 
 
 

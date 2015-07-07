@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+    svg text {
+      fill: #333333;
+      font-family: sans-serif; }
+
+    .chart-title, .axis-label {
+      font-weight: bold; }
+
+    .chart-title {
+      font-size: 30px;
+      text-anchor: middle; }
+
+    .axis-label {
+      font-size: 14px; }
+
+    .line {
+      stroke-width: 3px; }
+
+    .axis path {
+      fill: none;
+      stroke: #333333;
+      stroke-width: 2px; }
+    .axis .tick line {
+      stroke: #333333;
+      stroke-width: 1px; }
+
+    #tooltip {
+      position: absolute;
+      width: 200px;
+      height: auto;
+      padding: 10px;
+      background-color: #333333;
+      pointer-events: none;
+      border-radius: 3px; }
+      #tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+        color: white; }
+      #tooltip span {
+        padding: 5px; }
+      #tooltip .tooltip-label {
+        font-weight: bold; }
+
+    .hidden {
+      display: none; }
+
+    </style>
+  </head>
+  <body>
+    <div id="line-chart"></div>
+    <div id="scatter-chart"></div>
+  </body>
+  <script>
+    var d3 = require('d3');
+    var d5 = require('../main.js');
+
+    // First get the data
+    var httpRequest = new XMLHttpRequest();
+    var multiline;
+    httpRequest.onreadystatechange = function () {
+      if (httpRequest.readyState === 4) {
+        if (httpRequest.status === 200) {
+          multiline = JSON.parse(httpRequest.responseText);
+          createLineChart();
+        }
+        else
+          console.log('Something went wrong gettting the data');
+      }
+    };
+    httpRequest.open('GET', 'example-data/multiline.json');
+    httpRequest.send();
+
+
+
+    // Make the chart
+    function createLineChart() {
+      var svg = d3.select('#line-chart');
+
+      var chart_options = {
+        width: 1000,
+        height: 500
+      };
+
+
+      var line_chart = d5.line(chart_options)
+      .x(function(d) { return d.time; })
+      .y(function(d) { return d.cumulative; })
+      .group(function(d) { return d.school; })
+      .title('A line chart')
+      .xlab('Days')
+      .ylab('Growth');
+
+      svg.datum(multiline).call(line_chart);
+    }
+
+
+    // Get next data set
+    var httpRequest2 = new XMLHttpRequest();
+    var points;
+    httpRequest2.onreadystatechange = function () {
+      if (httpRequest2.readyState === 4) {
+        if (httpRequest2.status === 200) {
+          points = JSON.parse(httpRequest2.responseText);
+          createScatterPlot();
+        }
+        else
+          console.log('Something went wrong gettting the data');
+      }
+    };
+    httpRequest2.open('GET', 'example-data/points.json');
+    httpRequest2.send();
+
+    // Make the scatter plot
+    function createScatterPlot() {
+      var svg = d3.select('#scatter-chart');
+
+      var chart_options = {
+        width: 1000,
+        height: 800
+      };
+
+
+      var point_chart = d5.point(chart_options)
+      .x(function(d) { return d.x; })
+      .y(function(d) { return d.y; })
+      .group(function(d) {return d.name; })
+      .title('A Scatter Plot chart')
+      .xlab('Weight')
+      .ylab('Speed');
+
+      svg.datum(points).call(point_chart);
+    }
+  </script>
+  </html>

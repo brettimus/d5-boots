@@ -1,7 +1,9 @@
-var d3   = require("d3");
-var timeSeries = require("./time_series");
-var utils = require("./utils");
+var d3         = require("d3");
+var charts     = require("./charts-base");
+var extend     = require("./extend");
+var utils      = require("./utils");
 
+global.d3 = d3;
 global.d5 = (function(){
     
     function d5(selector, data, charter) {
@@ -19,9 +21,10 @@ global.d5 = (function(){
         return charty;
     }
 
-    d5.timeSeries = timeSeries;
-    d5.utils      = utils;
-    d5.d3         = d3;
+    // Mixin charting functions to main object
+    extend(d5, charts);
+    d5.utils = utils;
+    d5.d3    = d3;
 
     return d5;
 
