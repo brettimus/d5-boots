@@ -2,23 +2,17 @@ var d3    = require("d3"),
     merge = require("merge"),
     utils = require("../utils");
 
-
-
 // sensible defaults for a line chart, right?
 var DEFAULTS = {
+    height: 500,
+    width: 960,
     margin: {
         top    : 10,
         right  : 10,
         bottom : 25,
         left   : 25,
     },
-    dimensions: {
-        height : 500,
-        width  : 960,
-    },
-    line: {
-        interpolate: "linear",
-    },
+    interpolate: "linear",
     xValue: utils.xValueError,
     yValue: utils.yValueError,
 };
@@ -26,18 +20,20 @@ var DEFAULTS = {
 // heavily inspired by m. bostock's example of a reusable time-series chart
 function timeSeriesLine(options) {
     // merge the defaults with our options
-    options = merge.recursive(true, DEFAULTS, options || {});
+    options = merge.recursive(true, {}, DEFAULTS, options || {});
 
-    var height      = options.dimensions.height,
-        width       = options.dimensions.width,
+    var height      = options.height,
+        width       = options.width,
         margin      = options.margin,
         xScale      = d3.time.scale(),
         yScale      = d3.scale.linear(),
+        x           = options.xValue,
+        y           = options.yValue,
         xAxis       = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
         yAxis       = d3.svg.axis().scale(yScale).orient("left"),
         area        = d3.svg.area().x(X).y1(Y),
         line        = d3.svg.line().x(X).y(Y),
-        interpolate = options.line.interpolate;
+        interpolate = options.interpolate;
 
     var chart = function chart(selection) {
         selection.each(function(data) {
@@ -47,12 +43,12 @@ function timeSeriesLine(options) {
 
             // Update the x-scale.
             xScale
-                .domain(d3.extent(data, options.xValue))
+                .domain(d3.extent(data, x))
                 .range([0, width - margin.left - margin.right]);
 
             // Update the y-scale.
             yScale
-                .domain([0, d3.max(data, options.yValue)])
+                .domain([0, d3.max(data, y)])
                 .range([height - margin.top - margin.bottom, 0]);
 
             // Update the line's interpolation
@@ -129,23 +125,23 @@ function timeSeriesLine(options) {
 
     chart.x = function(getter) {
         if (!arguments.length) return x;
-        options.xValue = getter;
+        x = getter;
         return chart;
     };
 
     chart.y = function(getter) {
         if (!arguments.length) return y;
-        options.yValue = getter;
+        y = getter;
         return chart;
     };
 
     // accessors for the SVG path generator
     function X(d) {
-        return xScale(options.xValue(d));
+        return xScale(x(d));
     }
 
     function Y(d) {
-        return yScale(options.yValue(d));
+        return yScale(y(d));
     }
 
     return chart;
