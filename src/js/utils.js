@@ -1,5 +1,4 @@
 var d3 = require("d3");
-
 var format = d3.time.format("%Y-%m-%d"); // yyyy-mm-dd
 
 // generate n random 

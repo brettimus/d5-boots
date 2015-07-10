@@ -41,64 +41,64 @@ function Chart(config) {
     chart.setMakeChart = function(func) {
         if (typeof func !== 'function') return undefined;
         makeChart = func;
-        return this;
+        return chart;
     };
 
     chart.title =  function(new_title) {
         if (new_title === undefined) return title;
         title = new_title;
-        return this;
+        return chart;
     };
 
     chart.ylab = function(new_ylab) {
         if (new_ylab === undefined) return ylab;
         ylab = new_ylab;
-        return this;
+        return chart;
     };
 
     chart.xlab = function(new_xlab) {
         if (new_xlab === undefined) return xlab;
         xlab = new_xlab;
-        return this;
+        return chart;
     };
 
     chart.width = function(new_width) {
         if (new_width === undefined) return width;
         width = new_width;
-        return this;
+        return chart;
     };
 
     chart.height = function(new_height) {
         if (new_height === undefined) return height;
         height = new_height;
-        return this;
+        return chart;
     };
 
     chart.margin = function(value) {
         if (!arguments.length) return margin;
         margin = value;
-        return this;
+        return chart;
     };
 
     chart.marginTop = function(value) {
         if (!arguments.length) return margin.top;
         margin.top = value;
-        return this;
+        return chart;
     };
     chart.marginLeft = function(value) {
         if (!arguments.length) return margin.left;
         margin.left = value;
-        return this;
+        return chart;
     };
     chart.marginBottom = function(value) {
         if (!arguments.length) return margin.bottom;
         margin.bottom = value;
-        return this;
+        return chart;
     };
     chart.marginRight = function(value) {
         if (!arguments.length) return margin.right;
         margin.right = value;
-        return this;
+        return chart;
     };
 
     chart.x = function(new_x) {
@@ -106,7 +106,7 @@ function Chart(config) {
           return x;
         }
         x = new_x;
-        return this;
+        return chart;
     };
 
     chart.y = function(new_y) {
@@ -114,7 +114,7 @@ function Chart(config) {
           return y;
         }
         y = new_y;
-        return this;
+        return chart;
       };
 
     chart.group = function(new_group) {
@@ -122,7 +122,7 @@ function Chart(config) {
             return group;
         }
         group = new_group;
-        return this;
+        return chart;
     };
 
     chart.makeTitle = function(selection) {

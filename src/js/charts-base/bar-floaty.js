@@ -1,35 +1,31 @@
 var d3 = require('d3'),
     merge = require("merge");
 
-var DEFAULTS = {
-    margin: {
-        top: 10,
-        right: 10,
-        bottom: 25,
-        left: 25,
-    },
-    height: 300,
-    width: 400,
-    dimensions: {
-        height: 300,
-        width: 400,
-    },
-    colors: {
-        color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"]
-    },
-    legend: {
-      height: 60,
-      width: 50,
-    },
-};
-
 module.exports = barGraph;
 
 function barGraph(options) {
+    var DEFAULTS = {
+        margin: {
+            top: 10,
+            right: 10,
+            bottom: 25,
+            left: 25,
+        },
+        height: 300,
+        width: 400,
+        colors: {
+            color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"]
+        },
+        legend: {
+          height: 60,
+          width: 50,
+        },
+    };
+    
     options = merge.recursive(true, {}, DEFAULTS, options || {});
 
-    var height = options.dimensions.height,
-        width  = options.dimensions.width,
+    var height = options.height,
+        width  = options.width,
         margin = options.margin;
 
     function chart(selection) {

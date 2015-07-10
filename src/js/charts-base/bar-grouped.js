@@ -1,35 +1,31 @@
 var d3 = require('d3'),
     merge = require("merge");
 
-
-var DEFAULTS = {
-    margin: {
-        top: 10,
-        right: 10,
-        bottom: 25,
-        left: 25,
-    },
-    dimensions: {
-        height: 300,
-        width: 400
-    },
-    colors: {
-        color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
-    },
-    legend: {
-        height: 60,
-        width: 50
-    },
-};
-
 module.exports = groupedHistogram;
 
 function groupedHistogram(options) {
+    var DEFAULTS = {
+        margin: {
+            top: 10,
+            right: 10,
+            bottom: 25,
+            left: 25,
+        },
+        height: 300,
+        width: 400,
+        colors: {
+            color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
+        },
+        legend: {
+            height: 60,
+            width: 50,
+        },
+    };
 
     options = merge.recursive(true, {}, DEFAULTS, options || {});
 
-    var width = options.dimensions.width;
-    var height = options.dimensions.height;
+    var width = options.width;
+    var height = options.height;
     var margin = options.margin;
 
     function chart(selection) {
