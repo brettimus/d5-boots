@@ -129,28 +129,28 @@ function Chart(config) {
         selection.append('text')
             .attr({
                 'class': 'chart-title',
-                'x': this.width() / 2,
-                'y': this.margin().top / 2
+                'x': width / 2,
+                'y': margin.top / 2
             })
-            .text(this.title());
+            .text(title);
     };
 
     chart.makeAxisLabels = function(selection) {
       selection.append('text')
           .attr({
               'class': 'axis-label',
-              'x': this.width() / 2,
-              'y': this.height() - (this.marginBottom() / 2),
+              'x': width / 2,
+              'y': height - (margin.bottom / 2),
           })
-          .text(this.xlab());
+          .text(xlab);
 
       selection.append('text')
           .attr({
               'class': 'axis-label',
-              'x': this.marginTop() * 0.1,
-              'y': this.height() / 2,
+              'x': margin.top * 0.1,
+              'y': height / 2,
           })
-          .text(this.ylab());
+          .text(ylab);
     };
 
     chart.makeAxes = function(selection, xscale, yscale) {
@@ -165,7 +165,7 @@ function Chart(config) {
         selection.append('g')
             .attr('class', 'axis')
             .attr('transform', 'translate(0, ' +
-              (this.height() - this.marginBottom() - this.marginTop()) + ')')
+              (height - margin.bottom - margin.top) + ')')
             .call(xaxis);
         selection.append('g')
             .attr('class', 'axis')
@@ -213,8 +213,8 @@ function Chart(config) {
             .enter()
             .append('g')
             .attr('class', 'group-label')
-            .attr('transform', 'translate(' + (this.width() - margin.left) +
-              ', ' + (this.height() / 3) + ')');
+            .attr('transform', 'translate(' + (width - margin.left) +
+              ', ' + (height / 3) + ')');
 
         var self = this;
         lineColors = function(d) {

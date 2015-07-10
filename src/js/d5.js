@@ -3,6 +3,9 @@ var charts     = require("./charts-base");
 var extend     = require("./extend");
 var utils      = require("./utils");
 
+var d3 = require("d3");
+if (!d3.tip) require("d3-tip")(d3);
+
 global.d3 = d3;
 global.d5 = (function(){
     

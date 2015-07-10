@@ -59,81 +59,60 @@
 
   <script src="../d5.js"></script>
   <script>
-    // First get the data
-    var httpRequest = new XMLHttpRequest();
-    var multiline;
-    httpRequest.onreadystatechange = function () {
-      if (httpRequest.readyState === 4) {
-        if (httpRequest.status === 200) {
-          multiline = JSON.parse(httpRequest.responseText);
-          createLineChart();
-        }
-        else
-          console.log('Something went wrong gettting the data');
-      }
-    };
-    httpRequest.open('GET', 'example-data/multiline.json');
-    httpRequest.send();
+    var multiline,
+        points;
 
-
+    d3.json('example-data/multiline.json', createLineChart);
+    d3.json('example-data/points.json', createScatterPlot)
 
     // Make the chart
-    function createLineChart() {
-      var svg = d3.select('#line-chart');
+    function createLineChart(data) {
+        var svg = d3.select('#line-chart');
+        var options = {
+            width: 1000,
+            height: 500,
+            margin: {
+                top: 50,
+                right: 50,
+                bottom: 75,
+                left: 100,
+            }
+        };
 
-      var chart_options = {
-        width: 1000,
-        height: 500
-      };
+        multiline = d5.line(options)
+            .x(function(d) { return d.time; })
+            .y(function(d) { return d.cumulative; })
+            .group(function(d) { return d.school; })
+            .title('A line chart')
+            .xlab('Days')
+            .ylab('Growth');
 
-
-      var line_chart = d5.line(chart_options)
-      .x(function(d) { return d.time; })
-      .y(function(d) { return d.cumulative; })
-      .group(function(d) { return d.school; })
-      .title('A line chart')
-      .xlab('Days')
-      .ylab('Growth');
-
-      svg.datum(multiline).call(line_chart);
+        svg.datum(data).call(multiline);
     }
 
-
-    // Get next data set
-    var httpRequest2 = new XMLHttpRequest();
-    var points;
-    httpRequest2.onreadystatechange = function () {
-      if (httpRequest2.readyState === 4) {
-        if (httpRequest2.status === 200) {
-          points = JSON.parse(httpRequest2.responseText);
-          createScatterPlot();
-        }
-        else
-          console.log('Something went wrong gettting the data');
-      }
-    };
-    httpRequest2.open('GET', 'example-data/points.json');
-    httpRequest2.send();
-
     // Make the scatter plot
-    function createScatterPlot() {
-      var svg = d3.select('#scatter-chart');
+    function createScatterPlot(data) {
+        var svg = d3.select('#scatter-chart');
+        var options = {
+            width: 1000,
+            height: 800,
+            margin: {
+                top: 100,
+                right: 80,
+                bottom: 100,
+                left: 80,
+            },
+        };
 
-      var chart_options = {
-        width: 1000,
-        height: 800
-      };
+        points = d5.points(options)
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .group(function(d) { return d.name; })
+            .title('A Scatter Plot chart')
+            .xlab('Weight')
+            .ylab('Speed');
 
-
-      var point_chart = d5.points(chart_options)
-      .x(function(d) { return d.x; })
-      .y(function(d) { return d.y; })
-      .group(function(d) {return d.name; })
-      .title('A Scatter Plot chart')
-      .xlab('Weight')
-      .ylab('Speed');
-
-      svg.datum(points).call(point_chart);
+        svg.datum(data).call(points);
     }
   </script>
   </html>
