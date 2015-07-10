@@ -48,39 +48,41 @@
 
   <script src="../d5.js"></script>
   <script type="text/javascript">
-    var options= {
-  margin: {
-    top: 10, 
-    right:10, 
-    bottom:25, 
-    left: 30,
-  }, 
-  dimensions:{
-    height: 400,
-    width: 500
-  }, 
-  colors:{
-      color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
-  },
-  legend: {
-    height: 60,
-    width: 50
-  },
-}
-  var data = [{x: 3, y: 5, type:"Female"}, {x:2, y:6, type:"Female"}, {x:1, y:10, type:"Male"}, {x:2, y:8, type:"Male"}, {x:3, y:9, type:"Male"}, {x:1, y:5, type:"Female"},{x:0, y:6, type:"Male"}, {x:0, y:3, type:"Female"}, {x: 4, y: 5, type:"Female"}, {x:4, y:9, type:"Male"}, {x:5, y:2, type:"Female"}, {x:5, y:8, type:"Male"}, {x:6, y:2, type:"Female"}, {x:6, y:5, type:"Male"}]
+    var options = {
+        margin: {
+            top: 10, 
+            right:10, 
+            bottom:25, 
+            left: 30,
+        },
+        height: 400,
+        width: 500,
+        colors:{
+            color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
+        },
+        legend: {
+            height: 60,
+            width: 50
+        },
+    };
+    
+    var data = [{x: 3, y: 5, type:"Female"}, {x:2, y:6, type:"Female"}, {x:1, y:10, type:"Male"}, {x:2, y:8, type:"Male"}, {x:3, y:9, type:"Male"}, {x:1, y:5, type:"Female"},{x:0, y:6, type:"Male"}, {x:0, y:3, type:"Female"}, {x: 4, y: 5, type:"Female"}, {x:4, y:9, type:"Male"}, {x:5, y:2, type:"Female"}, {x:5, y:8, type:"Male"}, {x:6, y:2, type:"Female"}, {x:6, y:5, type:"Male"}]
 
-  var dataset = [{x:3, y:5}, {x:2, y:6}, {x:1, y:10}, {x:0, y:6}, {x:4, y:5}, {x:5, y:8}, {x:6, y:2}]
+    var dataset = [{x:3, y:5}, {x:2, y:6}, {x:1, y:10}, {x:0, y:6}, {x:4, y:5}, {x:5, y:8}, {x:6, y:2}]
 
+    var stackedChart = d5.barFloaty()
+        .width(400)
+        .height(300);
+    d5("#chart1", data, stackedChart)
+        
 
-  var stackedChart = d5.barStacked().width(400).height(300)
-      d5("#chart1", data, stackedChart)
-      
+    var groupedChart = d5.barGrouped()
+        .width(400)
+        .height(300);
+    d5("#chart2", data, groupedChart)
 
-  var groupedChart = d5.barGrouped().width(400).height(300)
-      d5("#chart2", data, groupedChart)
-
-  // var barGraph = d5.barGraph()
-  //     d5("#chart3", dataset, barGraph)
+    // var barGraph = d5.barGraph()
+    //     d5("#chart3", dataset, barGraph)
 
   </script>
 </body>
