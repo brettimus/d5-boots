@@ -1,5 +1,4 @@
 var d3 = require('d3'),
-    Chart = require('./chart-class'),
     merge = require('merge');
 
 
@@ -117,18 +116,19 @@ function scatter(user_config) {
         config.y = new_y;
         return chart;
     };
-    function getSet(variable) {
+    function getSet(varname) {
         return function (new_value) {
-            if (new_value === undefined) return variable;
-            variable = new_value;
+            if (new_value === undefined) return config[varname];
+            config[varname] = new_value;
             return chart;
         };
     }
-    chart.width = getSet(config.width);
-    chart.height = getSet(config.height);
-    chart.title = getSet(config.title);
-    chart.xlab = getSet(config.xlab);
-    chart.ylab = getSet(config.ylab);
+
+    chart.width = getSet('width');
+    chart.height = getSet('height');
+    chart.title = getSet('title');
+    chart.xlab = getSet('xlab');
+    chart.ylab = getSet('ylab');
 
     chart.group = function (new_group) {
       if (new_group === undefined) return config.group;
