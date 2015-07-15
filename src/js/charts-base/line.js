@@ -39,7 +39,6 @@ function line(user_config) {
 
     // Define the make chart function
     function chart(selection) {
-        console.log(config);
         // Create an SVG if there isn't one
         selection.each(function(data) {
             var svg = d3.select(this)
@@ -47,6 +46,15 @@ function line(user_config) {
                 .data([data])
                 .enter()
                 .append('svg');
+
+            // Check on the accessor functions
+            if (config.x === undefined) throw new Error('X accessor undefined');
+            if (config.y === undefined) throw new Error('Y accessor undefined');
+            if ( isNaN(config.x(data[0])) ) throw new Error('X Accessor give NaN!');
+            if ( isNaN(config.y(data[0])) ) throw new Error('Y Accessor gives NaN!');
+            if ( config.group !== undefined && config.group !== null
+                && !config.group(data[0]) )
+                throw new Error('Group accessor is not valid');
 
             // Create the inner group for the contents of the chart
             var translation = 'translate(' + [config.margin.left, config.margin.top] + ')';
@@ -79,16 +87,15 @@ function line(user_config) {
             var line = d3.svg.line()
                     .x(sequence(config.x, config.xScale))
                     .y(sequence(config.y, config.yScale));
-                  //.x(function(d) { return config.xScale(config.x(d)); })
-                  //.y(function(d) { return config.yScale(config.y(d)); });
 
             var lineLabels;
-            if (config.group !== undefined) {
+
+            if (config.group !== undefined && config.group !== null) {
                 lineLabels = createLines(inner, data, config, line);
                 makeGroupLabels(svg, lineLabels, config);
             }
             else
-                createLine(inner, data, config);
+                createLines(inner, data, config, line);
 
         });
     }
@@ -139,17 +146,16 @@ function line(user_config) {
     return chart;
 }
 
-
-
 function createLines(element, data, config, line) {
 
     var groupings = groupData(data, config);
 
     // Now create the lines
-    d3.select('svg').select('g')
+    var lines = d3.select('svg').select('g')
         .selectAll('.line-grouping')
-        .data(groupings)
-        .enter()
+        .data(groupings);
+
+    lines.enter()
         .append('g')
         .attr('class', 'line-grouping')
         .append('path')
@@ -159,6 +165,7 @@ function createLines(element, data, config, line) {
             fill : 'none',
             stroke : sequence(getGroup, config.groupScale)
         });
+    lines.exit().remove();
 
     function getGroup(d) { return d.group; }
 
@@ -187,8 +194,16 @@ function sequence() {
  */
 function groupData (data, config) {
     // First get the set of groupings
-    var groupings = d3.set(data.map(config.group)).values();
-    // For each of the groups, collect the relevant data
+    var groupings;
+    if (config.group !== undefined && config.group !== null) {
+        groupings = d3.set(data.map(config.group)).values();
+        // For each of the groups, collect the relevant data
+        groupings = groupings.map(extractGroup);
+    } else {
+        groupings = [{ group : 'data', data : data }];
+    }
+    return groupings;
+
     function groupFilter(i) {
         return function (d) {
             return config.group(d) === groupings[i];
@@ -201,9 +216,8 @@ function groupData (data, config) {
             data : new_data
         };
     }
-    groupings = groupings.map(extractGroup);
-    return groupings;
 }
+
 /**
  * @function makeGroupLabels Creates labels for the groupings. Each labels has a colored
  * rectangle and a text label. The text label is based on the category in group.
@@ -211,31 +225,12 @@ function groupData (data, config) {
  */
 function makeGroupLabels (selection, labelData, config) {
     var position = [config.width - config.margin.left,
-                    config.height / 3],
-        labels = selection.selectAll('.group-label')
-            .data(labelData)
-            .enter()
-            .append('g')
-            .attr('class', 'group-label')
-            .attr('transform', 'translate(' + position + ')');
-    function lineColors (d) {
-        var group = config.group(d.data[0]);
-        return config.groupScale(group);
-    }
-    labels.append('rect')
-        .attr({
-            fill : lineColors,
-            width : 16,
-            height : 16,
-            x : 0,
-            y : function (d, i) { return 18 * i; }
-        });
-    labels.append('text')
-        .attr({
-            x : 20,
-            y : function (d, i) { return i * 18 + 16; }
-        })
-        .text(function (d) { return config.group(d.data[1]); });
+                    config.height / 3];
+    var legend = d3.legend.color().scale(config.groupScale);
+    selection.append('g')
+        .attr('class', 'legend group-legend')
+        .attr('transform', 'translate(' + position + ')')
+        .call(legend);
 }
 
 /**

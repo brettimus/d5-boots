@@ -54,6 +54,7 @@
   </head>
   <body>
     <div id="line-chart"></div>
+    <div id="multiline-chart"></div>
     <div id="scatter-chart"></div>
   </body>
 
@@ -62,10 +63,14 @@
     var multiline,
         points;
 
-    d3.json('example-data/multiline.json', createLineChart);
-    d3.json('example-data/points.json', createScatterPlot)
+    d3.json('example-data/multiline.json', createMultilineChart);
+    //d3.json('example-data/points.json', createScatterPlot)
 
-    // Make the chart
+    d3.csv('https://vincentarelbundock.github.io/Rdatasets/csv/datasets/AirPassengers.csv',
+           createLineChart);
+    d3.csv('https://vincentarelbundock.github.io/Rdatasets/csv/datasets/mtcars.csv',
+           createScatterPlots);
+
     function createLineChart(data) {
         var svg = d3.select('#line-chart');
         var options = {
@@ -74,6 +79,33 @@
             margin: {
                 top: 50,
                 right: 50,
+                bottom: 100,
+                left: 200,
+            }
+        };
+
+        singleline = d5.line(options)
+            .x(function(d) { return d.time; })
+            .y(function(d) { return d.AirPassengers; })
+            .title('Airline Passengers')
+            .xlab('Year')
+            .ylab('Number of Passengers');
+
+        svg.datum(data).call(singleline);
+        
+
+    }
+
+    // Make the line chart
+    function createMultilineChart(data) {
+        var svg = d3.select('#multiline-chart');
+
+    var options = {
+            width: 1000,
+            height: 500,
+            margin: {
+                top: 50,
+                right: 100,
                 bottom: 75,
                 left: 100,
             }
@@ -83,19 +115,23 @@
             .x(function(d) { return d.time; })
             .y(function(d) { return d.cumulative; })
             .group(function(d) { return d.school; })
-            .title('A line chart')
+            .title('Growth of the Hipster Population at Various Schools')
             .xlab('Days')
-            .ylab('Growth');
+            .ylab('Population');
 
         svg.datum(data).call(multiline);
+    
     }
 
+
+
+
     // Make the scatter plot
-    function createScatterPlot(data) {
+    function createScatterPlots(data) {
         var svg = d3.select('#scatter-chart');
         var options = {
-            width: 1000,
-            height: 800,
+            width: 600,
+            height: 600,
             margin: {
                 top: 100,
                 right: 80,
@@ -105,12 +141,13 @@
         };
 
         points = d5.points(options)
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; })
-            .group(function(d) { return d.name; })
-            .title('A Scatter Plot chart')
-            .xlab('Weight')
-            .ylab('Speed');
+            .x(function(d) { return d.mpg; })
+            .y(function(d) { return d.hp; })
+            .group(function(d) { return d.am; })
+            .size(function(d) { return d.wt })
+            .title('Cars: Fuel Efficiency versus Horse Power')
+            .xlab('MPG')
+            .ylab('HP');
 
         svg.datum(data).call(points);
     }

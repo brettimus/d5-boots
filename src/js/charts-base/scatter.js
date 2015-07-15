@@ -1,5 +1,6 @@
 var d3 = require('d3'),
-    merge = require('merge');
+    merge = require('merge'),
+    legend = require('d3-svg-legend');
 
 
 module.exports = scatter;
@@ -27,10 +28,12 @@ function scatter(user_config) {
         x : undefined,
         y : undefined,
         group : undefined,
+        size : 3, // can be accessor or number
         // Scales
         xScale : d3.scale.linear(),
         yScale : d3.scale.linear(),
         groupScale : d3.scale.category10(),
+        sizeScale : d3.scale.linear(),
         // Misc
         tip: undefined
     };
@@ -46,6 +49,32 @@ function scatter(user_config) {
                 .data([data])
                 .enter()
                 .append('svg');
+
+            // Check on the accessor functions
+            if (config.x === undefined) throw new Error('X accessor undefined');
+            if (config.y === undefined) throw new Error('Y accessor undefined');
+            if ( isNaN(config.x(data[0])) ) throw new Error('X Accessor give NaN!');
+            if ( isNaN(config.y(data[0])) ) throw new Error('Y Accessor gives NaN!');
+            if ( config.group !== undefined && config.group !== null
+                 && !config.group(data[0]) )
+                throw new Error('Group accessor is not valid');
+            if (typeof config.size !== 'number' && typeof config.size !== 'function')
+                throw new Error('Size must be a number or accessor function');
+            if (typeof config.size === 'function' && isNaN(config.size(data[0])))
+                throw new Error('Size accessor not giving numeric values');
+
+            // Maybe not the best way to do do this, but adding conversion to float
+            // when these functions don't get a number back
+            if (typeof config.x(data[0]) !== 'number')
+                chart.x(sequence(config.x, parseFloat));
+            if (typeof config.y(data[0]) !== 'number')
+                chart.y(sequence(config.y, parseFloat));
+            if (typeof config.size === 'function' &&
+                typeof config.size(data[0]) !== 'number')
+                chart.size(sequence(config.size, parseFloat));
+
+
+
             // Create the inner group for the contents of the chart
             var translation = 'translate(' + [config.margin.left, config.margin.top] + ')';
             var inner = svg.append('g')
@@ -79,6 +108,11 @@ function scatter(user_config) {
                 .domain(d3.extent(data, config.y))
                 .range([config.height - config.margin.bottom - config.margin.top, 0]);
 
+            // Set up sizes if applicable
+            if (typeof config.size === 'function')
+                config.sizeScale.domain(d3.extent(data, config.size))
+                .range([3, 12]);
+
             // Draw the axes
             makeAxes(inner, config);
 
@@ -94,7 +128,27 @@ function scatter(user_config) {
     }
 
     /**
-     * All of the getters and setters
+     * Getters and Setters:
+     * ****************************************************************************
+     * Has default values
+     */
+    function getSet(varname) {
+        return function (new_value) {
+            if (new_value === undefined) return config[varname];
+            config[varname] = new_value;
+            return chart;
+        };
+    }
+
+    chart.width = getSet('width');
+    chart.height = getSet('height');
+    chart.title = getSet('title');
+    chart.xlab = getSet('xlab');
+    chart.ylab = getSet('ylab');
+    chart.size = getSet('size');
+
+    /**
+     * Required and no default
      */
     chart.x = function (new_x) {
         if (new_x === undefined) {
@@ -116,20 +170,10 @@ function scatter(user_config) {
         config.y = new_y;
         return chart;
     };
-    function getSet(varname) {
-        return function (new_value) {
-            if (new_value === undefined) return config[varname];
-            config[varname] = new_value;
-            return chart;
-        };
-    }
 
-    chart.width = getSet('width');
-    chart.height = getSet('height');
-    chart.title = getSet('title');
-    chart.xlab = getSet('xlab');
-    chart.ylab = getSet('ylab');
-
+    /**
+     * Optional and no default
+     */
     chart.group = function (new_group) {
       if (new_group === undefined) return config.group;
         config.group = new_group;
@@ -166,12 +210,18 @@ function createPoints(selection, data, config) {
             .attr({
                 cx : function(d) { return config.xScale(config.x(d)); },
                 cy : function(d) { return config.yScale(config.y(d)); },
-                r : 3,
+                r : theSize(config.size),
                 fill : function(d) { return config.groupScale(config.group(d)); }
             })
             .on('mouseover', config.tip.show)
             .on('mouseout', config.tip.hide);
     });
+
+    function theSize(func) {
+        if (typeof func === 'number') return func;
+        else return sequence(func, config.sizeScale);
+    }
+
     return groupings;
 }
 
@@ -185,8 +235,16 @@ function createPoints(selection, data, config) {
  */
 function groupData (data, config) {
     // First get the set of groupings
-    var groupings = d3.set(data.map(config.group)).values();
-    // For each of the groups, collect the relevant data
+    var groupings;
+    if (config.group !== undefined && config.group !== null) {
+        groupings = d3.set(data.map(config.group)).values();
+        // For each of the groups, collect the relevant data
+        groupings = groupings.map(extractGroup);
+    } else {
+        groupings = [{ group : 'data', data : data }];
+    }
+    return groupings;
+
     function groupFilter(i) {
         return function (d) {
             return config.group(d) === groupings[i];
@@ -199,9 +257,8 @@ function groupData (data, config) {
             data : new_data
         };
     }
-    groupings = groupings.map(extractGroup);
-    return groupings;
 }
+
 /**
  * @function makeGroupLabels Creates labels for the groupings. Each labels has a colored
  * rectangle and a text label. The text label is based on the category in group.
@@ -209,31 +266,12 @@ function groupData (data, config) {
  */
 function makeGroupLabels (selection, labelData, config) {
     var position = [config.width - config.margin.left,
-                    config.height / 3],
-        labels = selection.selectAll('.group-label')
-            .data(labelData)
-            .enter()
-            .append('g')
-            .attr('class', 'group-label')
-            .attr('transform', 'translate(' + position + ')');
-    function lineColors (d) {
-        var group = config.group(d.data[0]);
-        return config.groupScale(group);
-    }
-    labels.append('rect')
-        .attr({
-            fill : lineColors,
-            width : 16,
-            height : 16,
-            x : 0,
-            y : function (d, i) { return 18 * i; }
-        });
-    labels.append('text')
-        .attr({
-            x : 20,
-            y : function (d, i) { return i * 18 + 16; }
-        })
-        .text(function (d) { return config.group(d.data[1]); });
+                    config.height / 3];
+    var legend = d3.legend.color().scale(config.groupScale);
+    selection.append('g')
+        .attr('class', 'legend group-legend')
+        .attr('transform', 'translate(' + position + ')')
+        .call(legend);
 }
 
 /**
@@ -297,3 +335,16 @@ function makeAxes(selection, config) {
         .call(yaxis);
 
 }
+
+
+    function sequence() {
+        var fns = arguments;
+
+        return function (result) {
+            for (var i = 0; i < fns.length; i++) {
+                result = fns[i].call(this, result);
+            }
+
+            return result;
+        };
+    };

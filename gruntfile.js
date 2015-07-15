@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             js: {
-                files: ['dist/d5.js'],
-                tasks: ['uglify']
+                files: ['src/js/charts-base/*.js'],
+                tasks: ['default']
             }
         },
 
